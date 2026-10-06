@@ -255,6 +255,53 @@
     letter-spacing: 0.1em; margin-top: 3rem;
   }
 
+  /* View switcher */
+  .view-switch {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto; padding: 1.5rem 2rem 0;
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+  }
+  .view-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.7rem 1.4rem; border-radius: 2px;
+    border: 1px solid var(--border); background: var(--tag-bg);
+    color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .view-btn:hover, .view-btn.active {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(232,200,72,0.08);
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Guides view */
+  .guides-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem; margin-top: 0.5rem;
+  }
+  .guide-card {
+    display: flex; flex-direction: column; gap: 0.6rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 1.75rem 1.5rem; text-decoration: none; color: var(--text);
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  }
+  .guide-card:hover {
+    background: #1a1a20; border-left-color: var(--accent2); transform: translateY(-2px);
+  }
+  .guide-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 700; line-height: 1.2;
+  }
+  .guide-card p { color: var(--muted); font-size: 0.88rem; }
+  .guide-card .guide-open {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); margin-top: 0.5rem;
+  }
+  .guide-card:hover .guide-open { color: var(--accent2); }
+
   @media (max-width: 600px) {
     .task-header { grid-template-columns: 2.5rem 1fr; }
     .freq-info { display: none; }
@@ -275,7 +322,29 @@
   </div>
 </header>
 
+<nav class="view-switch">
+  <button class="view-btn active" data-view="viewTasks">Analiza nalog</button>
+  <button class="view-btn" data-view="viewGuides">Ustni izpit &amp; vprašanja</button>
+</nav>
+
 <main>
+<div class="view" id="viewGuides">
+  <div class="section-title" style="margin-top:2rem;">Gradivo za ustni izpit</div>
+  <div class="guides-grid">
+    <a class="guide-card" href="izpiti/Matematika3_ustni_izpit_odgovori.pdf" target="_blank">
+      <h3>Ustni izpit — odgovori</h3>
+      <p>Odgovori na vprašanja za ustni izpit iz Matematike III.</p>
+      <span class="guide-open">Odpri PDF ↗</span>
+    </a>
+    <a class="guide-card" href="izpiti/Matematika3_najpogostejsa_vprasanja.pdf" target="_blank">
+      <h3>Najpogostejša vprašanja</h3>
+      <p>Pregled najpogosteje zastavljenih vprašanj.</p>
+      <span class="guide-open">Odpri PDF ↗</span>
+    </a>
+  </div>
+</div>
+
+<div class="view active" id="viewTasks">
   <div class="section-title" style="margin-top:2rem;">Filtriraj po tematskem sklopu</div>
   <div class="filters">
     <div class="chip active" data-filter="all">Vse naloge</div>
@@ -303,6 +372,7 @@
       <span style="display:inline-block;width:10px;height:10px;background:var(--border);border-radius:2px;margin-right:4px;vertical-align:middle;"></span> odsotna
     </p>
   </div>
+</div><!-- /viewTasks -->
 </main>
 
 <footer>Podatki pridobljeni iz 20 izpitov Matematike III · 2021–2026</footer>
@@ -587,6 +657,15 @@ function renderHeatmap(filter) {
     });
   });
 }
+
+document.querySelectorAll('.view-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.view).classList.add('active');
+  });
+});
 
 renderTasks('all');
 renderMisc();
